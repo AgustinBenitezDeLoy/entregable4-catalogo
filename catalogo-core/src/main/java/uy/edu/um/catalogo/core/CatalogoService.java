@@ -12,7 +12,7 @@ public class CatalogoService {
     }
 
     public Videojuego registrar(String nombre, Genero genero, String imagen) {
-        if (nombre == null || nombre.isBlank() || nombre.strip().length() > 80) {
+        if (nombre == null || nombre.isEmpty() || nombre.strip().length() > 80) {
             throw new IllegalArgumentException("El nombre debe tener entre 1 y 80 caracteres.");
         }
         if (genero == null) {
