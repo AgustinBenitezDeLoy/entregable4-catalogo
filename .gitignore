@@ -1,0 +1,9 @@
+**/target/
+.idea/
+.vscode/
+*.iml
+data/
+produccion/
+*.log
+*.pid
+.DS_Store

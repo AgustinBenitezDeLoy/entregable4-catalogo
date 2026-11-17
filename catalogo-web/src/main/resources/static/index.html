@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Catálogo de videojuegos</title><link rel="stylesheet" href="/estilos.css"><script src="/app.js" defer></script></head>
+<body>
+<header><p>PROGRAMACIÓN AVANZADA · UNIVERSIDAD DE MONTEVIDEO</p><h1 id="titulo">Catálogo de videojuegos</h1><p>Registrá tus juegos y explorá el catálogo por género.</p></header>
+<main>
+  <section aria-labelledby="registro"><h2 id="registro">Registrar videojuego</h2>
+    <form id="formulario">
+      <label>Nombre<input id="nombre" name="nombre" maxlength="80" required placeholder="Ej.: Aventura del Sur"></label>
+      <label>Género<select id="genero" name="genero" required><option value="">Elegí un género</option></select></label>
+      <label>Imagen<select id="imagen" name="imagen"><option value="/img/mando.svg">Mando</option><option value="/img/aventura.svg">Aventura</option><option value="/img/estrategia.svg">Estrategia</option></select></label>
+      <button type="submit">Registrar</button>
+    </form><p id="mensaje" role="status" aria-live="polite"></p>
+  </section>
+  <section aria-labelledby="catalogo"><div class="encabezado"><h2 id="catalogo">Tus videojuegos</h2><label>Filtrar por género<select id="filtro"><option value="">Todos los géneros</option></select></label></div><p id="cantidad"></p><div id="juegos" class="juegos"></div></section>
+</main><footer>Agustín Benítez y Federico Otero · Entregable 4 · <span id="revision"></span></footer>
+</body></html>
