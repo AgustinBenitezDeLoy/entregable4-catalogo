@@ -81,13 +81,13 @@ El usuario del agente necesita escribir en la carpeta de producción y consultar
 
 ## Jenkins y GitHub: configuración del entorno
 
-El código y el Jenkinsfile están preparados. Se ejecutaron dos jobs bajo Jenkins local 2.580.2: uno exitoso (26 pruebas y despliegue) y otro con regresión (dos fallos y despliegue omitido). El arnés interno sustituye SCM por una copia de archivos y usa el puerto 8091 para aislar la validación. Al preparar esta entrega no existía repositorio GitHub: la integración remota y su demostración permanecen pendientes. Crear un repositorio y subir los archivos requiere autorización del equipo. Los siguientes son pasos para cuando el equipo disponga del repositorio, no acciones ya realizadas.
+Repositorio: <https://github.com/AgustinBenitezDeLoy/entregable4-catalogo>, rama `main`. Está conectado a Jenkins 2.580.2 local con el job `catalogo-ci-cd` (Pipeline script from SCM, rama `*/main`, Script Path `Jenkinsfile`). El 17/11/2026 el build #1 obtuvo de GitHub el commit `604f3c6`, pasó las 26 pruebas, archivó el JAR y lo desplegó en el puerto 8081; `/api/estado` publicó esa misma revisión. Antes de crear el repositorio, el pipeline se había validado con un arnés que sustituía SCM por una copia de archivos (un job exitoso y otro con la regresión de dos fallos, puerto 8091). Los pasos siguientes documentan la configuración usada, para reproducirla en otro equipo.
 
 1. Instalar Jenkins LTS compatible con el JDK elegido. Para Java 25 se requiere Jenkins 2.541.1 o posterior. Instalar plugins Pipeline (incluye Declarative), Git y JUnit y sus dependencias.
 2. Configurar un agente Windows con etiqueta `windows`. Para una demostración académica local puede ser el nodo integrado, con un solo ejecutor. El servicio debe usar una cuenta con permisos sobre sus procesos y la carpeta de producción.
 3. En Manage Jenkins / Tools, registrar Maven **Maven3** y JDK **JDK**, apuntando a las instalaciones locales. No confundir el JDK del controlador con el disponible en el agente.
-4. Cuando exista el repositorio, subir la raíz del proyecto completa, incluyendo `src/test`, los POM, scripts y Jenkinsfile. Cada integrante usa su cuenta Git y cambios pequeños revisados por el compañero. No subir `target`, datos ni producción. Ejecutar `mvn clean verify` antes de integrar cambios.
-5. Crear un job Pipeline / Pipeline script from SCM / Git. Indicar la URL real de GitHub, las credenciales si es privado, la rama `*/main` y Script Path `Jenkinsfile`. No hay una URL ficticia embebida en el código.
+4. El repositorio contiene la raíz del proyecto completa, incluyendo `src/test`, los POM, scripts y Jenkinsfile. Cada integrante usa su cuenta Git y cambios pequeños revisados por el compañero. No subir `target`, datos ni producción. Ejecutar `mvn clean verify` antes de integrar cambios.
+5. Crear un job Pipeline / Pipeline script from SCM / Git. Indicar la URL `https://github.com/AgustinBenitezDeLoy/entregable4-catalogo.git` (repositorio público, sin credenciales), la rama `*/main` y Script Path `Jenkinsfile`. La URL no está embebida en el código.
 6. Ejecutar **Build Now** una vez para registrar el trigger. Configurar el parámetro `PRODUCCION_DIR` como carpeta absoluta escribible y fuera del workspace, por ejemplo `C:\Jenkins\produccion\catalogo`. Usar otra carpeta por proyecto.
 7. `pollSCM('* * * * *')` consulta GitHub cada minuto. Al detectar un cambio programa el pipeline. Puede haber más de un commit entre consultas: Jenkins integra la última revisión detectada. No requiere exponer Jenkins a Internet ni configurar webhook.
 8. Abrir Stage View, Console Output, Test Result y Artifacts. Verificar que `/api/estado` publica el hash Git del build. Conservar las consolas de ambos casos de defensa.
@@ -104,13 +104,13 @@ Un comando Maven con salida distinta de cero detiene la ejecución. Los reportes
 
 ## Defensa: casos exigidos por la consigna
 
-Mostrar brevemente la web, registrar un juego, filtrar y localizar los dos módulos. Luego mostrar Jenkinsfile y ejecutar los dos escenarios. Las modificaciones y sus commits/pushes se realizan por los integrantes cuando esté autorizado el repositorio.
+Mostrar brevemente la web, registrar un juego, filtrar y localizar los dos módulos. Luego mostrar Jenkinsfile y ejecutar los dos escenarios. Las modificaciones y sus commits/pushes se realizan en vivo sobre el repositorio GitHub.
 
 **Caso 1, integración exitosa.** Cambiar en `catalogo-web/src/main/resources/application.properties` el valor de `catalogo.mensaje` a `Catalogo actualizado por Fede y Agus`. Ejecutar `mvn clean verify`, guardar el cambio en Git y subirlo a GitHub. Esperar la detección de SCM. Mostrar todas las etapas verdes, el artefacto archivado y el nuevo mensaje en <http://localhost:8081>. Comparar la revisión de `/api/estado` con el commit. No pulsar Build Now para sustituir la demostración del trigger automático.
 
 **Caso 2, prueba fallida.** En `catalogo-core/src/main/java/uy/edu/um/catalogo/core/CatalogoService.java`, cambiar únicamente `nombre.isBlank()` por `nombre.isEmpty()`. Introduce una regresión que acepta espacios. Para esta demostración controlada, subir ese cambio sabiendo que falla (excepción académica a la práctica de no integrar código roto). Jenkins debe fallar en las pruebas unitarias. Mostrar `CatalogoServiceTest.rechazaNombreVacio`, las etapas posteriores omitidas y la revisión de producción todavía igual a la última estable. Corregir restaurando `isBlank()` o revertir el commit, volver a subir y esperar el pipeline verde. No borrar ni desactivar los tests. Ambos integrantes deben participar.
 
-La inyección local de esta regresión detectó dos fallos de aserciones. La demostración de commits, sondeo y colaboración remota se debe completar con GitHub real antes de la defensa. El ZIP no incluye un historial Git inventado.
+La inyección local de esta regresión detectó dos fallos de aserciones. Los dos casos se ejecutan en vivo durante la defensa, con el sondeo sobre GitHub ya conectado. El historial Git está en el repositorio; el ZIP no incluye la carpeta `.git`.
 
 ## Estructura, pruebas e informe
 
